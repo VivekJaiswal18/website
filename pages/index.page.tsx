@@ -181,7 +181,7 @@ const Home = (props: any) => {
                 href='/learn/getting-started-step-by-step'
                 className='flex items-center justify-center rounded border-2 border-white text-white w-[194px] h-[40px] font-semibold'
               >
-                Getting started
+                {/* Getting started */}
               </Link>
               <Link
                 href='/slack'
