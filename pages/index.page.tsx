@@ -185,7 +185,7 @@ const Home = (props: any) => {
               </Link>
               <Link
                 href='/slack'
-                className='flex items-center justify-center rounded border-2 border-white  text-white  w-[194px] h-[40px] font-semibold'
+                className='flex items-center justify-center rounded border-2 border-white text-white  w-[194px] h-[40px] font-semibold'
               >
                 Join Slack
               </Link>
@@ -321,7 +321,7 @@ const Home = (props: any) => {
               Generators, Linters, and other JSON Schema Utilities made by this
               amazing Community.
             </p>
-            <button className='w-full md:w-1/2 md:ml-28 lg:ml-0 mx-auto h-[45px] rounded border-2 bg-primary text-white'>
+            <button className='w-full md:w-1/2 md:ml-28 lg:ml-0 mx-auto  h-[45px] rounded border-2 bg-primary text-white'>
               <a href='/implementations/'>Explore</a>
             </button>
           </div>
@@ -417,7 +417,7 @@ const Home = (props: any) => {
               <div>
                 <Link
                   href={`/blog/posts/${blogPosts[0].slug}`}
-                  className='block w-full lg:w-1/2 rounded border-2 bg-primary text-white h-[40px] text-center pt-1 semi-bold flex items-center justify-center'
+                  className='block w-full lg:w-1/2 rounded border-2 bg-primary text-white  h-[40px] text-center pt-1 semi-bold flex items-center justify-center'
                 >
                   Read more{' '}
                 </Link>
@@ -472,7 +472,7 @@ const Home = (props: any) => {
                 </div>
                 <a
                   href='https://calendar.google.com/calendar/u/0/embed?src=c_8r4g9r3etmrmt83fm2gljbatos@group.calendar.google.com'
-                  className='block w-full lg:w-1/2 rounded border-2 bg-primary text-white h-[40px] text-center pt-1 flex items-center justify-center'
+                  className='block w-full lg:w-1/2 rounded border-2 bg-primary text-white  h-[40px] text-center pt-1 flex items-center justify-center'
                   target='_blank'
                   rel='noopener noreferrer'
                 >
