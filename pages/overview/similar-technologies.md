@@ -3,7 +3,7 @@ section: docs
 title: Similar Technologies
 ---
 
-While we think that JSON Schema has a unique value proposition, we'd like to provide visibility to other technologies that share similar goals:
+<!-- While we think that JSON Schema has a unique value proposition, we'd like to provide visibility to other technologies that share similar goals: -->
 
 
 
