@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import classnames from 'classnames';
@@ -6,6 +6,10 @@ import { useRouter } from 'next/router';
 import { DocSearch } from '@docsearch/react';
 import useStore from '~/store';
 import { SectionContext } from '~/context';
+import { useTheme } from 'next-themes';
+import DarkModeToggle from './DarkModeToggle';
+import extractPathWithoutFragment from '~/lib/extractPathWithoutFragment';
+import ScrollButton from './ScrollButton';
 
 type Props = {
   children: React.ReactNode;
@@ -46,7 +50,7 @@ export default function Layout({
 
   const newTitle = `JSON Schema${metaTitle ? ` - ${metaTitle}` : ''}`;
   return (
-    <div className='min-h-screen relative flex flex-col justify-between'>
+    <div className='min-h-screen relative flex flex-col justify-between '>
       <FaviconHead />
       <Head>
         <title>{newTitle}</title>
@@ -61,14 +65,15 @@ export default function Layout({
           className={classnames(
             mainClassName,
             'z-10 xl:rounded-xl py-4 mx-auto',
+            // 'z-10 h-screen  xl:rounded-xl pt-4 mx-auto',
           )}
         >
           <header
             className={classnames(
-              'w-full bg-white fixed top-0 z-[170] shadow-xl drop-shadow-lg',
+              'w-full bg-white dark:bg-slate-800 fixed top-0 z-[170] shadow-xl drop-shadow-lg',
             )}
           >
-            <div className='w-full flex md:justify-between items-center ml-8 2xl:px-12 py-4'>
+            <div className='flex w-full md:justify-between items-center ml-8 2xl:px-12 py-4'>
               <Logo />
               <MainNavigation />
             </div>
@@ -81,6 +86,7 @@ export default function Layout({
           ) : (
             <div>{children}</div>
           )}
+          <ScrollButton />
           <Footer />
         </main>
       </div>
@@ -97,7 +103,6 @@ export const Search = () => {
     />
   );
 };
-
 /* eslint-disable @typescript-eslint/no-unused-vars */
 const MainNavLink = ({
   uri,
@@ -116,8 +121,13 @@ const MainNavLink = ({
       href={uri}
       className={classnames(
         className,
-        'font-semibold p-2 md:p-4',
-        `${router.asPath === uri ? 'text-primary hover:text-primary' : 'text-slate-600 hover:text-primary'}`,
+        'font-semibold p-2 md:p-4 dark:text-slate-300',
+        // `${
+        //   router.asPath === uri
+        //     ? 'text-primary hover:text-primary'
+        //     : 'text-slate-600 hover:text-primary'
+        // }`,
+        `${extractPathWithoutFragment(router.asPath) === uri ? 'text-primary hover:text-primary' : 'text-slate-600 hover:text-primary'}`,
       )}
     >
       {label}
@@ -129,8 +139,26 @@ const MainNavigation = () => {
   const section = useContext(SectionContext);
   const showMobileNav = useStore((s: any) => s.overlayNavigation === 'docs');
 
+  const { theme } = useTheme();
+  const [icon, setIcon] = useState('');
+  const [menu, setMenu] = useState('bg-black');
+  const [closeMenu, setCLoseMenu] = useState('url("/icons/cancel.svg")');
+
+  useEffect(() => {
+    const icon = theme === 'dark' ? 'herobtn' : '';
+    const menu = theme === 'dark' ? 'bg-white' : 'bg-black';
+    const closeMenu =
+      theme === 'dark'
+        ? 'url("/icons/cancel-dark.svg")'
+        : 'url("/icons/cancel.svg")';
+
+    setIcon(icon);
+    setMenu(menu);
+    setCLoseMenu(closeMenu);
+  }, [theme]);
+
   return (
-    <div className='flex justify-end mr-8 w-full'>
+    <div className='flex justify-end md:mr-8 w-full '>
       <MainNavLink
         className='hidden lg:block hover:underline'
         uri='/specification'
@@ -162,22 +190,31 @@ const MainNavigation = () => {
         label='Community'
         isActive={section === 'community'}
       />
-      <div className='flex max-sm:ml-4 items-center gap-12 md:gap-4'>
-        <div className='flex justify-center rounded border-2 border-gray-100 ml-0 w-[120px] md:w-full'>
+
+      <div className='flex items-center max-sm:ml-4 mr-8  gap-6 md:gap-4 dark:bg-slate-800'>
+        <div
+          className={`rounded-md dark:hover:bg-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none transition duration-150  md:block border-gray-100 ml-0  ${icon}`}
+          onClick={() => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+        >
           <Search />
         </div>
+        <DarkModeToggle />
         {showMobileNav === false ? (
           <div onClick={() => useStore.setState({ overlayNavigation: 'docs' })}>
             <div className='block lg:hidden space-y-2  items-center'>
-              <div className='w-6 h-1 bg-black rounded'></div>
-              <div className='w-6 h-1 bg-black rounded'></div>
-              <div className='w-6 h-1 bg-black rounded'></div>
+              <div className={`w-6 h-1 ${menu} rounded`}></div>
+              <div className={`w-6 h-1 ${menu} rounded`}></div>
+              <div className={`w-6 h-1 ${menu} rounded`}></div>
             </div>
           </div>
         ) : (
           <div
-            style={{ backgroundImage: 'url("/icons/cancel.svg")' }}
-            className='h-6 w-6 bg-center bg-[length:22px_22px] bg-no-repeat  transition-all cursor-pointer'
+            style={{
+              backgroundImage: closeMenu,
+            }}
+            className='h-6 w-6 bg-center bg-[length:22px_22px] bg-no-repeat  transition-all cursor-pointer dark:text-slate-300'
             onClick={() => useStore.setState({ overlayNavigation: null })}
           />
         )}
@@ -214,7 +251,7 @@ const MobileNav = () => {
   const section = useContext(SectionContext);
 
   return (
-    <div className='flex flex-col justify-end fixed shadow-xl bg-white w-full  z-[190] mt-16 left-0 pl-8'>
+    <div className='flex flex-col justify-end fixed bg-white w-full  z-[190] mt-16 left-0 pl-8 dark:bg-slate-800'>
       <MainNavLink
         uri='/specification'
         label='Specification'
@@ -242,13 +279,15 @@ const MobileNav = () => {
 };
 
 export const SegmentHeadline = ({ label }: { label: string }) => {
-  return <div className='text-slate-900 font-bold'>{label}</div>;
+  return (
+    <div className='text-slate-900 dark:text-slate-300 font-bold'>{label}</div>
+  );
 };
 
 const Footer = () => (
   <footer
     className={classnames(
-      'z-10 md:h-[300px]  bg-gradient-to-r from-startBlue from-1.95% to-endBlue clip-bottom mb-12',
+      'z-10 md:h-[300px]  bg-gradient-to-r from-startBlue from-1.95% to-endBlue clip-bottom mb-12 dark:from-[#002C34] dark:to-[#023e8a] ',
     )}
   >
     <div className='max-w-[1400px] mx-auto mt-4 grid grid-cols-1 md:grid-cols-2 md:w-1/2 lg:w-1/3 justify-center '>
@@ -268,8 +307,8 @@ const Footer = () => (
           </a>
         </div>
       </div>
-      <div className='grid grid-cols-3 md:grid-cols-1 mx-auto md:mt-8 mb-4 md:mb-0 lg:ml-12'>
-        <div className='mr-4 mb-4'>
+      <div className='grid grid-cols-3 md:grid-cols-1 mx-auto md:mt-8 mb-4 md:mb-0  gap-x-4 gap-y-4 md:gap-x-0 md:gap-y-0'>
+        <div className=''>
           <a
             href='https://json-schema.org/slack'
             className='flex items-center text-white'
@@ -281,7 +320,7 @@ const Footer = () => (
             Slack
           </a>
         </div>
-        <div className='mb-4 mr-4'>
+        <div className=''>
           <a
             href='https://twitter.com/jsonschema'
             className='flex items-center text-white'
@@ -290,7 +329,7 @@ const Footer = () => (
             Twitter
           </a>
         </div>
-        <div className='mr-4 mb-4'>
+        <div className=''>
           <a
             href='https://linkedin.com/company/jsonschema/'
             className='flex items-center text-white'
@@ -302,7 +341,7 @@ const Footer = () => (
             LinkedIn
           </a>
         </div>
-        <div className='mr-4 mb-4'>
+        <div className=''>
           <a
             href='https://www.youtube.com/@JSONSchemaOrgOfficial'
             className='flex items-center text-white'
@@ -337,7 +376,6 @@ const OpenJS = () => (
           src='/img/logos/openjs_foundation-logo-horizontal-color.svg'
           alt='color openjs foundation logo'
         ></img>
-        {/* <div className='absolute bottom-0 ml-6  mb-12'>© {new Date().getFullYear()} Copyright JSON Schema Organisation </div> */}
       </div>
       <div className='md:w-5/6 lg:w-full mx-auto  mb-16'>
         <p className='mb-6'>
@@ -450,11 +488,26 @@ const OpenJS = () => (
   </div>
 );
 
-const Logo = () => (
-  <Link href='/' className=''>
-    <img src='/img/logos/logo-blue.svg' className='h-12 mr-2 ' />
-  </Link>
-);
+const Logo = () => {
+  const { theme } = useTheme();
+  const [imageSrc, setImageSrc] = useState('/img/logos/logo-blue.svg'); // Default to match the server-side render
+
+  useEffect(() => {
+    const src =
+      theme === 'dark'
+        ? '/img/logos/logo-white.svg'
+        : '/img/logos/logo-blue.svg';
+    setImageSrc(src);
+  }, [theme]);
+
+  return (
+    <div>
+      <Link href='/' className=''>
+        <img src={imageSrc} className='h-12 mr-2 ' />
+      </Link>
+    </div>
+  );
+};
 
 const FaviconHead = () => {
   const [isDarkMode, setIsDarkMode] = React.useState(false);

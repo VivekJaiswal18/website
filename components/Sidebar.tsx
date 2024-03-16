@@ -5,7 +5,9 @@ import Link from 'next/link';
 import { HOST } from '~/lib/config';
 import classnames from 'classnames';
 import { SegmentHeadline } from './Layout';
+import extractPathWithoutFragment from '~/lib/extractPathWithoutFragment';
 import CarbonAds from './CarbonsAds';
+import { useTheme } from 'next-themes';
 
 const DocLink = ({
   uri,
@@ -19,13 +21,14 @@ const DocLink = ({
   url.search = '';
   url.hash = '';
   const stringUrl = url.toString().substr(HOST.length, Infinity);
-  const isActive = uri === stringUrl;
+  const isActive = uri === extractPathWithoutFragment(stringUrl);
   return (
     <Link
       href={uri}
       className={classnames('text-sm block border-l-2 py-1 pl-2', {
         '  font-medium': !isActive,
-        'text-primary text-bold border-l-primary font-semibold': isActive,
+        'text-primary dark:text-[#007bff] text-bold border-l-primary  font-semibold':
+          isActive,
       })}
     >
       {label}
@@ -45,7 +48,7 @@ const DocLinkBlank = ({
   url.search = '';
   url.hash = '';
   const stringUrl = url.toString().substr(HOST.length, Infinity);
-  const isActive = uri === stringUrl;
+  const isActive = uri === extractPathWithoutFragment(stringUrl);
   return (
     <Link
       href={uri}
@@ -62,7 +65,11 @@ const DocLinkBlank = ({
 };
 
 const SegmentSubtitle = ({ label }: { label: string }) => {
-  return <div className='text-sm italic text-slate-900 mt-2 mb-2'>{label}</div>;
+  return (
+    <div className='text-sm italic text-slate-900 dark:text-slate-400 mt-2 mb-2'>
+      {label}
+    </div>
+  );
 };
 const getDocsPath = [
   '/overview/what-is-jsonschema',
@@ -122,7 +129,7 @@ export const SidebarLayout = ({ children }: { children: React.ReactNode }) => {
   const [rotateChevron, setRotateChevron] = useState(false);
   const handleRotate = () => setRotateChevron(!rotateChevron);
   const rotate = rotateChevron ? 'rotate(180deg)' : 'rotate(0)';
-
+  const pathWtihoutFragment = extractPathWithoutFragment(router.asPath);
   return (
     <div className='max-w-[1400px] mx-auto flex flex-col items-center'>
       <section>
@@ -136,18 +143,18 @@ export const SidebarLayout = ({ children }: { children: React.ReactNode }) => {
               setOpen(!open);
             }}
           >
-            {router.asPath === '/overview/what-is-jsonschema' && (
+            {pathWtihoutFragment === '/overview/what-is-jsonschema' && (
               <h3 className='text-white ml-12'>Overview</h3>
             )}
-            {getStartedPath.includes(router.asPath) && (
+            {getStartedPath.includes(pathWtihoutFragment) && (
               <h3 className='text-white ml-12'>Getting Started</h3>
             )}
 
-            {getReferencePath.includes(router.asPath) && (
+            {getReferencePath.includes(pathWtihoutFragment) && (
               <h3 className='text-white ml-12'>Reference</h3>
             )}
 
-            {getSpecificationPath.includes(router.asPath) && (
+            {getSpecificationPath.includes(pathWtihoutFragment) && (
               <h3 className='text-white ml-12'>Specification</h3>
             )}
 
@@ -182,7 +189,7 @@ export const SidebarLayout = ({ children }: { children: React.ReactNode }) => {
           </div>
         </div>
 
-        <div className='max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-4 mx-4 md:mx-12'>
+        <div className='dark:bg-slate-800 max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-4 mx-4 md:mx-12'>
           <div className='hidden lg:block mt-24'>
             <DocsNav />
             <CarbonAds
@@ -210,13 +217,14 @@ export const DocsNav = () => {
     getSpecification: false,
   });
   useEffect(() => {
-    if (getDocsPath.includes(router.asPath)) {
+    const pathWtihoutFragment = extractPathWithoutFragment(router.asPath);
+    if (getDocsPath.includes(pathWtihoutFragment)) {
       setActive({ ...active, getDocs: true });
-    } else if (getStartedPath.includes(router.asPath)) {
+    } else if (getStartedPath.includes(pathWtihoutFragment)) {
       setActive({ ...active, getStarted: true });
-    } else if (getReferencePath.includes(router.asPath)) {
+    } else if (getReferencePath.includes(pathWtihoutFragment)) {
       setActive({ ...active, getReference: true });
-    } else if (getSpecificationPath.includes(router.asPath)) {
+    } else if (getSpecificationPath.includes(pathWtihoutFragment)) {
       setActive({ ...active, getSpecification: true });
     }
   }, [router.asPath]);
@@ -241,16 +249,20 @@ export const DocsNav = () => {
   const rotateG = active.getStarted ? 'rotate(180deg)' : 'rotate(0)';
   const rotateR = active.getReference ? 'rotate(180deg)' : 'rotate(0)';
   const rotateSpec = active.getSpecification ? 'rotate(180deg)' : 'rotate(0)';
-
+  const { theme } = useTheme();
   return (
     <div id='sidebar ' className='lg:mt-8 w-4/5 mx-auto lg:ml-4'>
-      <div className='mb-2 bg-slate-200 p-2 rounded'>
+      <div className='mb-2 bg-slate-200 dark:bg-slate-900 p-2 rounded'>
         <div
           className='flex justify-between w-full items-center'
           onClick={handleClickDoc}
         >
           <div className='flex  items-center align-middle'>
-            <img src='/icons/eye.svg' alt='eye icon' className='mr-2' />
+            <img
+              src={`${theme === 'dark' ? '/icons/eye-dark.svg' : '/icons/eye.svg'}`}
+              alt='eye icon'
+              className='mr-2'
+            />
             <SegmentHeadline label='Overview' />
           </div>
           <svg
@@ -287,13 +299,18 @@ export const DocsNav = () => {
         </div>
       </div>
       {/* Get Started */}
-      <div className='mb-2 bg-slate-200 p-2 rounded'>
+
+      <div className='mb-2 bg-slate-200 dark:bg-slate-900 p-2 rounded'>
         <div
           className='flex justify-between w-full items-center'
           onClick={handleClickGet}
         >
           <div className='flex  items-center align-middle'>
-            <img src='/icons/compass.svg' alt='eye icon' className='mr-2' />
+            <img
+              src={`${theme === 'dark' ? '/icons/compass-dark.svg' : '/icons/compass.svg'}`}
+              alt='eye icon'
+              className='mr-2'
+            />
             <SegmentHeadline label='Getting Started' />
           </div>
           <svg
@@ -333,13 +350,18 @@ export const DocsNav = () => {
         </div>
       </div>
       {/* Reference */}
-      <div className='mb-2 bg-slate-200 p-2 rounded'>
+
+      <div className='mb-2 bg-slate-200 dark:bg-slate-900 p-2 rounded'>
         <div
           className='flex justify-between w-full items-center'
           onClick={handleClickReference}
         >
           <div className='flex  items-center align-middle'>
-            <img src='/icons/book.svg' alt='eye icon' className='mr-2' />
+            <img
+              src={`${theme === 'dark' ? '/icons/book-dark.svg' : '/icons/book.svg'}`}
+              alt='eye icon'
+              className='mr-2'
+            />
             <SegmentHeadline label='Reference' />
           </div>
           <svg
@@ -478,13 +500,18 @@ export const DocsNav = () => {
         </div>
       </div>
       {/* Specification */}
-      <div className='mb-2 bg-slate-200 p-2 rounded'>
+
+      <div className='mb-2 bg-slate-200 dark:bg-slate-900 p-2 rounded'>
         <div
           className='flex justify-between w-full items-center'
           onClick={handleClickSpec}
         >
           <div className='flex  items-center align-middle'>
-            <img src='/icons/clipboard.svg' alt='eye icon' className='mr-2' />
+            <img
+              src={`${theme === 'dark' ? '/icons/clipboard-dark.svg' : '/icons/clipboard.svg'}   `}
+              alt='eye icon'
+              className='mr-2'
+            />
             <SegmentHeadline label='Specification' />
           </div>
           <svg
