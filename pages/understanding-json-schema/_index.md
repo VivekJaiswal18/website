@@ -8,7 +8,7 @@ Understanding JSON Schema
 
 <img src="understanding/octopus.svg" className="w-1/2 float-right" />
 
-JSON Schema is a powerful tool for validating the structure of JSON
+<!-- JSON Schema is a powerful tool for validating the structure of JSON -->
 data. However, learning to use it by reading its specification is like
 learning to drive a car by looking at its blueprints. You don\'t need to
 know how an electric motor fits together if all you want to do is pick
