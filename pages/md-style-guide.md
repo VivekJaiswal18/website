@@ -8,7 +8,7 @@ Contributors to our Docs and Blog can use any of these custom markdown tags to e
 
 ### **Star**
 
-Adds a star with label along with it. In place of `"label"` text can be added which needs to be shown.
+<!-- Adds a star with label along with it. In place of `"label"` text can be added which needs to be shown. -->
 
 ```markdown
 <Star label="label"/>
