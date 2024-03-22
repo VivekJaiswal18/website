@@ -342,7 +342,7 @@ export const DocsNav = () => {
             label='Similar Technologies'
           />
           <DocLink uri='/overview/code-of-conduct' label='Code of Conduct' />
-          <DocLink uri='/overview/faq' label='FAQ' />
+          <DocLink uri='/overview/faq' label='Faq' />
         </div>
       </div>
       {/* Get Started */}
