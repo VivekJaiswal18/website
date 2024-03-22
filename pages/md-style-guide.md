@@ -2,7 +2,7 @@
 title: Markdown Style Guide
 ---
 
-<!-- Contributors to our Docs and Blog can use any of these custom markdown tags to easily create cool content that provides a better user experience. -->
+Contributors to our Docs and Blog can use any of these custom markdown tags to easily create cool content that provides a better user experience.
 
 <!-- ### 🚀 Custom Markdown Writing Style Guide -->
 
